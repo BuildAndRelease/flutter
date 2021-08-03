@@ -20,17 +20,18 @@ import 'media_query.dart';
 import 'scroll_aware_image_provider.dart';
 import 'ticker_provider.dart';
 
-export 'package:flutter/painting.dart' show
-  AssetImage,
-  ExactAssetImage,
-  FileImage,
-  FilterQuality,
-  ImageConfiguration,
-  ImageInfo,
-  ImageStream,
-  ImageProvider,
-  MemoryImage,
-  NetworkImage;
+export 'package:flutter/painting.dart'
+    show
+        AssetImage,
+        ExactAssetImage,
+        FileImage,
+        FilterQuality,
+        ImageConfiguration,
+        ImageInfo,
+        ImageStream,
+        ImageProvider,
+        MemoryImage,
+        NetworkImage;
 
 /// Creates an [ImageConfiguration] based on the given [BuildContext] (and
 /// optionally size).
@@ -46,7 +47,8 @@ export 'package:flutter/painting.dart' show
 /// See also:
 ///
 ///  * [ImageProvider], which has an example showing how this might be used.
-ImageConfiguration createLocalImageConfiguration(BuildContext context, { Size? size }) {
+ImageConfiguration createLocalImageConfiguration(BuildContext context,
+    {Size? size}) {
   return ImageConfiguration(
     bundle: DefaultAssetBundle.of(context),
     devicePixelRatio: MediaQuery.maybeOf(context)?.devicePixelRatio ?? 1.0,
@@ -106,7 +108,8 @@ Future<void> precacheImage(
   Size? size,
   ImageErrorListener? onError,
 }) {
-  final ImageConfiguration config = createLocalImageConfiguration(context, size: size);
+  final ImageConfiguration config =
+      createLocalImageConfiguration(context, size: size);
   final Completer<void> completer = Completer<void>();
   final ImageStream stream = provider.resolve(config);
   ImageStreamListener? listener;
@@ -338,13 +341,13 @@ class Image extends StatefulWidget {
     this.gaplessPlayback = false,
     this.isAntiAlias = false,
     this.filterQuality = FilterQuality.low,
-  }) : assert(image != null),
-       assert(alignment != null),
-       assert(repeat != null),
-       assert(filterQuality != null),
-       assert(matchTextDirection != null),
-       assert(isAntiAlias != null),
-       super(key: key);
+  })  : assert(image != null),
+        assert(alignment != null),
+        assert(repeat != null),
+        assert(filterQuality != null),
+        assert(matchTextDirection != null),
+        assert(isAntiAlias != null),
+        super(key: key);
 
   /// Creates a widget that displays an [ImageStream] obtained from the network.
   ///
@@ -403,14 +406,15 @@ class Image extends StatefulWidget {
     Map<String, String>? headers,
     int? cacheWidth,
     int? cacheHeight,
-  }) : image = ResizeImage.resizeIfNeeded(cacheWidth, cacheHeight, NetworkImage(src, scale: scale, headers: headers)),
-       assert(alignment != null),
-       assert(repeat != null),
-       assert(matchTextDirection != null),
-       assert(cacheWidth == null || cacheWidth > 0),
-       assert(cacheHeight == null || cacheHeight > 0),
-       assert(isAntiAlias != null),
-       super(key: key);
+  })  : image = ResizeImage.resizeIfNeeded(cacheWidth, cacheHeight,
+            NetworkImage(src, scale: scale, headers: headers)),
+        assert(alignment != null),
+        assert(repeat != null),
+        assert(matchTextDirection != null),
+        assert(cacheWidth == null || cacheWidth > 0),
+        assert(cacheHeight == null || cacheHeight > 0),
+        assert(isAntiAlias != null),
+        super(key: key);
 
   /// Creates a widget that displays an [ImageStream] obtained from a [File].
   ///
@@ -467,17 +471,17 @@ class Image extends StatefulWidget {
     this.filterQuality = FilterQuality.low,
     int? cacheWidth,
     int? cacheHeight,
-  }) : image = ResizeImage.resizeIfNeeded(cacheWidth, cacheHeight, FileImage(file, scale: scale)),
-       loadingBuilder = null,
-       assert(alignment != null),
-       assert(repeat != null),
-       assert(filterQuality != null),
-       assert(matchTextDirection != null),
-       assert(cacheWidth == null || cacheWidth > 0),
-       assert(cacheHeight == null || cacheHeight > 0),
-       assert(isAntiAlias != null),
-       super(key: key);
-
+  })  : image = ResizeImage.resizeIfNeeded(
+            cacheWidth, cacheHeight, FileImage(file, scale: scale)),
+        loadingBuilder = null,
+        assert(alignment != null),
+        assert(repeat != null),
+        assert(filterQuality != null),
+        assert(matchTextDirection != null),
+        assert(cacheWidth == null || cacheWidth > 0),
+        assert(cacheHeight == null || cacheHeight > 0),
+        assert(isAntiAlias != null),
+        super(key: key);
 
   // TODO(ianh): Implement the following (see ../services/image_resolution.dart):
   //
@@ -633,18 +637,21 @@ class Image extends StatefulWidget {
     this.filterQuality = FilterQuality.low,
     int? cacheWidth,
     int? cacheHeight,
-  }) : image = ResizeImage.resizeIfNeeded(cacheWidth, cacheHeight, scale != null
-         ? ExactAssetImage(name, bundle: bundle, scale: scale, package: package)
-         : AssetImage(name, bundle: bundle, package: package)
-       ),
-       loadingBuilder = null,
-       assert(alignment != null),
-       assert(repeat != null),
-       assert(matchTextDirection != null),
-       assert(cacheWidth == null || cacheWidth > 0),
-       assert(cacheHeight == null || cacheHeight > 0),
-       assert(isAntiAlias != null),
-       super(key: key);
+  })  : image = ResizeImage.resizeIfNeeded(
+            cacheWidth,
+            cacheHeight,
+            scale != null
+                ? ExactAssetImage(name,
+                    bundle: bundle, scale: scale, package: package)
+                : AssetImage(name, bundle: bundle, package: package)),
+        loadingBuilder = null,
+        assert(alignment != null),
+        assert(repeat != null),
+        assert(matchTextDirection != null),
+        assert(cacheWidth == null || cacheWidth > 0),
+        assert(cacheHeight == null || cacheHeight > 0),
+        assert(isAntiAlias != null),
+        super(key: key);
 
   /// Creates a widget that displays an [ImageStream] obtained from a [Uint8List].
   ///
@@ -701,15 +708,16 @@ class Image extends StatefulWidget {
     this.filterQuality = FilterQuality.low,
     int? cacheWidth,
     int? cacheHeight,
-  }) : image = ResizeImage.resizeIfNeeded(cacheWidth, cacheHeight, MemoryImage(bytes, scale: scale)),
-       loadingBuilder = null,
-       assert(alignment != null),
-       assert(repeat != null),
-       assert(matchTextDirection != null),
-       assert(cacheWidth == null || cacheWidth > 0),
-       assert(cacheHeight == null || cacheHeight > 0),
-       assert(isAntiAlias != null),
-       super(key: key);
+  })  : image = ResizeImage.resizeIfNeeded(
+            cacheWidth, cacheHeight, MemoryImage(bytes, scale: scale)),
+        loadingBuilder = null,
+        assert(alignment != null),
+        assert(repeat != null),
+        assert(matchTextDirection != null),
+        assert(cacheWidth == null || cacheWidth > 0),
+        assert(cacheHeight == null || cacheHeight > 0),
+        assert(isAntiAlias != null),
+        super(key: key);
 
   /// The image to display.
   final ImageProvider image;
@@ -1064,18 +1072,27 @@ class Image extends StatefulWidget {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty<ImageProvider>('image', image));
     properties.add(DiagnosticsProperty<Function>('frameBuilder', frameBuilder));
-    properties.add(DiagnosticsProperty<Function>('loadingBuilder', loadingBuilder));
+    properties
+        .add(DiagnosticsProperty<Function>('loadingBuilder', loadingBuilder));
     properties.add(DoubleProperty('width', width, defaultValue: null));
     properties.add(DoubleProperty('height', height, defaultValue: null));
     properties.add(ColorProperty('color', color, defaultValue: null));
-    properties.add(EnumProperty<BlendMode>('colorBlendMode', colorBlendMode, defaultValue: null));
+    properties.add(EnumProperty<BlendMode>('colorBlendMode', colorBlendMode,
+        defaultValue: null));
     properties.add(EnumProperty<BoxFit>('fit', fit, defaultValue: null));
-    properties.add(DiagnosticsProperty<AlignmentGeometry>('alignment', alignment, defaultValue: null));
-    properties.add(EnumProperty<ImageRepeat>('repeat', repeat, defaultValue: ImageRepeat.noRepeat));
-    properties.add(DiagnosticsProperty<Rect>('centerSlice', centerSlice, defaultValue: null));
-    properties.add(FlagProperty('matchTextDirection', value: matchTextDirection, ifTrue: 'match text direction'));
-    properties.add(StringProperty('semanticLabel', semanticLabel, defaultValue: null));
-    properties.add(DiagnosticsProperty<bool>('this.excludeFromSemantics', excludeFromSemantics));
+    properties.add(DiagnosticsProperty<AlignmentGeometry>(
+        'alignment', alignment,
+        defaultValue: null));
+    properties.add(EnumProperty<ImageRepeat>('repeat', repeat,
+        defaultValue: ImageRepeat.noRepeat));
+    properties.add(DiagnosticsProperty<Rect>('centerSlice', centerSlice,
+        defaultValue: null));
+    properties.add(FlagProperty('matchTextDirection',
+        value: matchTextDirection, ifTrue: 'match text direction'));
+    properties.add(
+        StringProperty('semanticLabel', semanticLabel, defaultValue: null));
+    properties.add(DiagnosticsProperty<bool>(
+        'this.excludeFromSemantics', excludeFromSemantics));
     properties.add(EnumProperty<FilterQuality>('filterQuality', filterQuality));
   }
 }
@@ -1133,8 +1150,7 @@ class _ImageState extends State<Image> with WidgetsBindingObserver {
       _imageStream!.addListener(_getListener(recreateListener: true));
       _imageStream!.removeListener(oldListener);
     }
-    if (widget.image != oldWidget.image)
-      _resolveImage();
+    if (widget.image != oldWidget.image) _resolveImage();
   }
 
   @override
@@ -1152,8 +1168,8 @@ class _ImageState extends State<Image> with WidgetsBindingObserver {
   }
 
   void _updateInvertColors() {
-    _invertColors = MediaQuery.maybeOf(context)?.invertColors
-        ?? SemanticsBinding.instance!.accessibilityFeatures.invertColors;
+    _invertColors = MediaQuery.maybeOf(context)?.invertColors ??
+        SemanticsBinding.instance!.accessibilityFeatures.invertColors;
   }
 
   void _resolveImage() {
@@ -1162,17 +1178,19 @@ class _ImageState extends State<Image> with WidgetsBindingObserver {
       imageProvider: widget.image,
     );
     final ImageStream newStream =
-      provider.resolve(createLocalImageConfiguration(
-        context,
-        size: widget.width != null && widget.height != null ? Size(widget.width!, widget.height!) : null,
-      ));
+        provider.resolve(createLocalImageConfiguration(
+      context,
+      size: widget.width != null && widget.height != null
+          ? Size(widget.width!, widget.height!)
+          : null,
+    ));
     assert(newStream != null);
     _updateSourceStream(newStream);
   }
 
   ImageStreamListener? _imageStreamListener;
   ImageStreamListener _getListener({bool recreateListener = false}) {
-    if(_imageStreamListener == null || recreateListener) {
+    if (_imageStreamListener == null || recreateListener) {
       _lastException = null;
       _lastStack = null;
       _imageStreamListener = ImageStreamListener(
@@ -1193,7 +1211,7 @@ class _ImageState extends State<Image> with WidgetsBindingObserver {
 
   void _handleImageFrame(ImageInfo imageInfo, bool synchronousCall) {
     setState(() {
-      _replaceImage(info: imageInfo);
+      _replaceImage(info: imageInfo, needDispose: (_frameNumber ?? 0) == 0);
       _loadingProgress = null;
       _lastException = null;
       _lastStack = null;
@@ -1211,8 +1229,8 @@ class _ImageState extends State<Image> with WidgetsBindingObserver {
     });
   }
 
-  void _replaceImage({required ImageInfo? info}) {
-    _imageInfo?.dispose();
+  void _replaceImage({required ImageInfo? info, bool needDispose = true}) {
+    if (needDispose) _imageInfo?.dispose();
     _imageInfo = info;
   }
 
@@ -1220,14 +1238,14 @@ class _ImageState extends State<Image> with WidgetsBindingObserver {
   // registration from the old stream to the new stream (if a listener was
   // registered).
   void _updateSourceStream(ImageStream newStream) {
-    if (_imageStream?.key == newStream.key)
-      return;
+    if (_imageStream?.key == newStream.key) return;
 
-    if (_isListeningToStream)
-      _imageStream!.removeListener(_getListener());
+    if (_isListeningToStream) _imageStream!.removeListener(_getListener());
 
     if (!widget.gaplessPlayback)
-      setState(() { _replaceImage(info: null); });
+      setState(() {
+        _replaceImage(info: null);
+      });
 
     setState(() {
       _loadingProgress = null;
@@ -1236,13 +1254,11 @@ class _ImageState extends State<Image> with WidgetsBindingObserver {
     });
 
     _imageStream = newStream;
-    if (_isListeningToStream)
-      _imageStream!.addListener(_getListener());
+    if (_isListeningToStream) _imageStream!.addListener(_getListener());
   }
 
   void _listenToStream() {
-    if (_isListeningToStream)
-      return;
+    if (_isListeningToStream) return;
 
     _imageStream!.addListener(_getListener());
     _completerHandle?.dispose();
@@ -1259,10 +1275,11 @@ class _ImageState extends State<Image> with WidgetsBindingObserver {
   /// to true, which create [ImageStreamCompleterHandle] to keep the completer
   /// alive and is compatible with the [TickerMode] being off.
   void _stopListeningToStream({bool keepStreamAlive = false}) {
-    if (!_isListeningToStream)
-      return;
+    if (!_isListeningToStream) return;
 
-    if (keepStreamAlive && _completerHandle == null && _imageStream?.completer != null) {
+    if (keepStreamAlive &&
+        _completerHandle == null &&
+        _imageStream?.completer != null) {
       _completerHandle = _imageStream!.completer!.keepAlive();
     }
 
@@ -1272,7 +1289,7 @@ class _ImageState extends State<Image> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    if (_lastException  != null) {
+    if (_lastException != null) {
       assert(widget.errorBuilder != null);
       return widget.errorBuilder!(context, _lastException!, _lastStack);
     }
@@ -1309,7 +1326,8 @@ class _ImageState extends State<Image> with WidgetsBindingObserver {
     }
 
     if (widget.frameBuilder != null)
-      result = widget.frameBuilder!(context, result, _frameNumber, _wasSynchronouslyLoaded);
+      result = widget.frameBuilder!(
+          context, result, _frameNumber, _wasSynchronouslyLoaded);
 
     if (widget.loadingBuilder != null)
       result = widget.loadingBuilder!(context, result, _loadingProgress);
@@ -1322,8 +1340,10 @@ class _ImageState extends State<Image> with WidgetsBindingObserver {
     super.debugFillProperties(description);
     description.add(DiagnosticsProperty<ImageStream>('stream', _imageStream));
     description.add(DiagnosticsProperty<ImageInfo>('pixels', _imageInfo));
-    description.add(DiagnosticsProperty<ImageChunkEvent>('loadingProgress', _loadingProgress));
+    description.add(DiagnosticsProperty<ImageChunkEvent>(
+        'loadingProgress', _loadingProgress));
     description.add(DiagnosticsProperty<int>('frameNumber', _frameNumber));
-    description.add(DiagnosticsProperty<bool>('wasSynchronouslyLoaded', _wasSynchronouslyLoaded));
+    description.add(DiagnosticsProperty<bool>(
+        'wasSynchronouslyLoaded', _wasSynchronouslyLoaded));
   }
 }
