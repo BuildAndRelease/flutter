@@ -200,8 +200,20 @@ class TextSpan extends InlineSpan {
     final bool hasStyle = style != null;
     if (hasStyle)
       builder.pushStyle(style!.getTextStyle(textScaleFactor: textScaleFactor));
-    if (text != null)
-      builder.addText(text!);
+    if (text != null) {
+      try {
+        builder.addText(text!);
+      } on ArgumentError catch (exception, stack) {
+        FlutterError.reportError(FlutterErrorDetails(
+          exception: exception,
+          stack: stack,
+          library: 'painting library',
+          context: ErrorDescription('while building a TextSpan'),
+        ));
+        // Use a Unicode replacement character as a substitute for invalid text.
+        builder.addText('\uFFFD');
+      }
+    }
     if (children != null) {
       for (final InlineSpan child in children!) {
         assert(child != null);
