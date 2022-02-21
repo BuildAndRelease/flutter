@@ -90,6 +90,7 @@ class ScrollbarPainter extends ChangeNotifier implements CustomPainter {
     OutlinedBorder? shape,
     double minLength = _kMinThumbExtent,
     double? minOverscrollLength,
+    bool debounceThumb = true,
     ScrollbarOrientation? scrollbarOrientation,
     bool ignorePointer = false,
   }) : assert(color != null),
@@ -119,6 +120,7 @@ class ScrollbarPainter extends ChangeNotifier implements CustomPainter {
        _trackColor = trackColor,
        _trackBorderColor = trackBorderColor,
        _trackRadius = trackRadius,
+       _debounceThumb = debounceThumb,
        _scrollbarOrientation = scrollbarOrientation,
        _minOverscrollLength = minOverscrollLength ?? minLength,
        _ignorePointer = ignorePointer {
@@ -346,6 +348,16 @@ class ScrollbarPainter extends ChangeNotifier implements CustomPainter {
     notifyListeners();
   }
 
+  bool get debounceThumb => _debounceThumb;
+  bool _debounceThumb;
+  set debounceThumb(bool value) {
+    assert(debounceThumb != null);
+    if (_debounceThumb == value) return;
+
+    _debounceThumb = value;
+    notifyListeners();
+  }
+
   /// {@template flutter.widgets.Scrollbar.scrollbarOrientation}
   /// Dictates the orientation of the scrollbar.
   ///
@@ -554,6 +566,10 @@ class ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   }
 
   double _thumbExtent() {
+    return _debounceThumb ? _debounceThumbExtent() : _normalThumbExtent();
+  }
+
+  double _normalThumbExtent() {
     // Thumb extent reflects fraction of content visible, as long as this
     // isn't less than the absolute minimum size.
     // _totalContentExtent >= viewportDimension, so (_totalContentExtent - _mainAxisPadding) > 0
@@ -589,6 +605,51 @@ class ScrollbarPainter extends ChangeNotifier implements CustomPainter {
     // The `thumbExtent` should be no greater than `trackSize`, otherwise
     // the scrollbar may scroll towards the wrong direction.
     return clampDouble(thumbExtent, newMinLength, _trackExtent);
+  }
+
+  double _lastThumbExtent = double.infinity;
+  double _debounceThumbExtent() {
+    // Thumb extent reflects fraction of content visible, as long as this
+    // isn't less than the absolute minimum size.
+    // _totalContentExtent >= viewportDimension, so (_totalContentExtent - _mainAxisPadding) > 0
+    final double fractionVisible =
+        ((_lastMetrics!.extentInside - _mainAxisPadding) /
+                (_totalContentExtent - _mainAxisPadding))
+            .clamp(0.0, 1.0);
+
+    final double thumbExtent = math.max(
+      math.min(_trackExtent, minOverscrollLength),
+      _trackExtent * fractionVisible,
+    );
+
+    final double fractionOverscrolled =
+        1.0 - _lastMetrics!.extentInside / _lastMetrics!.viewportDimension;
+    final double safeMinLength = math.min(minLength, _trackExtent);
+    final double newMinLength = (_beforeExtent > 0 && _afterExtent > 0)
+        // Thumb extent is no smaller than minLength if scrolling normally.
+        ? safeMinLength
+        // User is overscrolling. Thumb extent can be less than minLength
+        // but no smaller than minOverscrollLength. We can't use the
+        // fractionVisible to produce intermediate values between minLength and
+        // minOverscrollLength when the user is transitioning from regular
+        // scrolling to overscrolling, so we instead use the percentage of the
+        // content that is still in the viewport to determine the size of the
+        // thumb. iOS behavior appears to have the thumb reach its minimum size
+        // with ~20% of overscroll. We map the percentage of minLength from
+        // [0.8, 1.0] to [0.0, 1.0], so 0% to 20% of overscroll will produce
+        // values for the thumb that range between minLength and the smallest
+        // possible value, minOverscrollLength.
+        : safeMinLength * (1.0 - fractionOverscrolled.clamp(0.0, 0.2) / 0.2);
+
+    // The `thumbExtent` should be no greater than `trackSize`, otherwise
+    // the scrollbar may scroll towards the wrong direction.
+    final currentThumbExtent = thumbExtent.clamp(newMinLength, _trackExtent);
+    if (_lastThumbExtent == double.infinity)
+      _lastThumbExtent = currentThumbExtent;
+    _lastThumbExtent = fractionOverscrolled >= 0
+        ? currentThumbExtent
+        : math.min(_lastThumbExtent, currentThumbExtent);
+    return _lastThumbExtent;
   }
 
   @override
@@ -629,13 +690,47 @@ class ScrollbarPainter extends ChangeNotifier implements CustomPainter {
   // Converts between a scroll position and the corresponding position in the
   // thumb track.
   double _getScrollToTrack(ScrollMetrics metrics, double thumbExtent) {
-    final double scrollableExtent = metrics.maxScrollExtent - metrics.minScrollExtent;
+    return _debounceThumb
+        ? _getDebounceScrollToTrack(metrics, thumbExtent)
+        : _getNormalScrollToTrack(metrics, thumbExtent);
+  }
+
+  double _getNormalScrollToTrack(ScrollMetrics metrics, double thumbExtent) {
+    final double scrollableExtent =
+        metrics.maxScrollExtent - metrics.minScrollExtent;
 
     final double fractionPast = (scrollableExtent > 0)
       ? clampDouble((metrics.pixels - metrics.minScrollExtent) / scrollableExtent, 0.0, 1.0)
       : 0;
 
     return (_isReversed ? 1 - fractionPast : fractionPast) * (_trackExtent - thumbExtent);
+  }
+
+  double _lastScrollPixels = double.infinity;
+  double _lastThumbOffset = double.infinity;
+  double _getDebounceScrollToTrack(ScrollMetrics metrics, double thumbExtent) {
+    final double scrollableExtent =
+        metrics.maxScrollExtent - metrics.minScrollExtent;
+
+    final double fractionPast = (scrollableExtent > 0)
+        ? ((metrics.pixels - metrics.minScrollExtent) / scrollableExtent)
+            .clamp(0.0, 1.0)
+        : 0;
+
+    final offset = (_isReversed ? 1 - fractionPast : fractionPast) *
+        (_trackExtent - thumbExtent);
+    if (_lastThumbOffset == double.infinity) _lastThumbOffset = offset;
+    if (_lastScrollPixels == double.infinity)
+      _lastScrollPixels = metrics.pixels;
+    if (_lastScrollPixels > metrics.pixels) {
+      _lastThumbOffset = math.min(offset, _lastThumbOffset);
+      _lastScrollPixels = metrics.pixels;
+      return _lastThumbOffset;
+    } else {
+      _lastThumbOffset = math.max(offset, _lastThumbOffset);
+      _lastScrollPixels = metrics.pixels;
+      return _lastThumbOffset;
+    }
   }
 
   @override
