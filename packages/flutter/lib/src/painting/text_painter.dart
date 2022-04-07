@@ -738,7 +738,7 @@ class TextPainter {
   // Get the Rect of the cursor (in logical pixels) based off the near edge
   // of the character upstream from the given string offset.
   Rect? _getRectFromUpstream(int offset, Rect caretPrototype) {
-    final String flattenedText = _text!.toPlainText(includePlaceholders: false);
+    final String flattenedText = _text!.toPlainText(includeSemanticsLabels: false);
     final int? prevCodeUnit = _text!.codeUnitAt(max(0, offset - 1));
     if (prevCodeUnit == null)
       return null;
@@ -788,7 +788,7 @@ class TextPainter {
   // Get the Rect of the cursor (in logical pixels) based off the near edge
   // of the character downstream from the given string offset.
   Rect? _getRectFromDownstream(int offset, Rect caretPrototype) {
-    final String flattenedText = _text!.toPlainText(includePlaceholders: false);
+    final String flattenedText = _text!.toPlainText(includeSemanticsLabels: false);
     // We cap the offset at the final index of the _text.
     final int? nextCodeUnit = _text!.codeUnitAt(min(offset, flattenedText.length - 1));
     if (nextCodeUnit == null)
