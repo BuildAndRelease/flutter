@@ -1,7 +1,3 @@
-// Copyright 2014 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import static groovy.io.FileType.FILES
 
 import com.android.builder.model.AndroidProject
@@ -27,6 +23,7 @@ import org.gradle.api.tasks.bundling.Jar
 import org.gradle.internal.os.OperatingSystem
 import org.gradle.util.VersionNumber
 
+<<<<<<< HEAD
 /** For apps only. Provides the flutter extension used in app/build.gradle. */
 class FlutterExtension {
     /** Sets the compileSdkVersion used by default in Flutter app projects. */
@@ -54,6 +51,8 @@ class FlutterExtension {
     String target
 }
 
+=======
+>>>>>>> f15c2daff8 (fix: 修复路由手势合并的冲突)
 buildscript {
     repositories {
         google()
@@ -65,15 +64,10 @@ buildscript {
     }
 }
 
-/**
- * Some apps don't set default compile options.
- * Apps can change these values in android/app/build.gradle.
- * This just ensures that default values are set.
- */
 android {
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
     }
 }
 
@@ -82,19 +76,19 @@ apply plugin: FlutterPlugin
 class FlutterPlugin implements Plugin<Project> {
     private static final String DEFAULT_MAVEN_HOST = "https://storage.googleapis.com";
 
-    /** The platforms that can be passed to the `--Ptarget-platform` flag. */
+    // The platforms that can be passed to the `--Ptarget-platform` flag.
     private static final String PLATFORM_ARM32  = "android-arm";
     private static final String PLATFORM_ARM64  = "android-arm64";
     private static final String PLATFORM_X86    = "android-x86";
     private static final String PLATFORM_X86_64 = "android-x64";
 
-    /** The ABI architectures supported by Flutter. */
+    // The ABI architectures.
     private static final String ARCH_ARM32      = "armeabi-v7a";
     private static final String ARCH_ARM64      = "arm64-v8a";
     private static final String ARCH_X86        = "x86";
     private static final String ARCH_X86_64     = "x86_64";
 
-    /** Maps platforms to ABI architectures. */
+    // Maps platforms to ABI architectures.
     private static final Map PLATFORM_ARCH_MAP = [
         (PLATFORM_ARM32)    : ARCH_ARM32,
         (PLATFORM_ARM64)    : ARCH_ARM64,
@@ -102,11 +96,9 @@ class FlutterPlugin implements Plugin<Project> {
         (PLATFORM_X86_64)   : ARCH_X86_64,
     ]
 
-    /**
-     * The version code that gives each ABI a value.
-     * For each APK variant, use the following versions to override the version of the Universal APK.
-     * Otherwise, the Play Store will complain that the APK variants have the same version.
-     */
+    // The version code that gives each ABI a value.
+    // For each APK variant, use the following versions to override the version of the Universal APK.
+    // Otherwise, the Play Store will complain that the APK variants have the same version.
     private static final Map ABI_VERSION = [
         (ARCH_ARM32)        : 1,
         (ARCH_ARM64)        : 2,
@@ -114,20 +106,18 @@ class FlutterPlugin implements Plugin<Project> {
         (ARCH_X86_64)       : 4,
     ]
 
-    /** When split is enabled, multiple APKs are generated per each ABI. */
+    // When split is enabled, multiple APKs are generated per each ABI.
     private static final List DEFAULT_PLATFORMS = [
         PLATFORM_ARM32,
         PLATFORM_ARM64,
         PLATFORM_X86_64,
     ]
 
-    /**
-     * The name prefix for flutter builds. This is used to identify gradle tasks
-     * where we expect the flutter tool to provide any error output, and skip the
-     * standard Gradle error output in the FlutterEventLogger. If you change this,
-     * be sure to change any instances of this string in symbols in the code below
-     * to match.
-     */
+    // The name prefix for flutter builds.  This is used to identify gradle tasks
+    // where we expect the flutter tool to provide any error output, and skip the
+    // standard Gradle error output in the FlutterEventLogger. If you change this,
+    // be sure to change any instances of this string in symbols in the code below
+    // to match.
     static final String FLUTTER_BUILD_PREFIX = "flutterBuild"
 
     private Project project
@@ -149,7 +139,7 @@ class FlutterPlugin implements Plugin<Project> {
         this.project = project
 
         def rootProject = project.rootProject
-        if (isFlutterAppProject()) {
+        if (isFlutterAppProject()) {//增加是否FlutterApp工程的判断
             rootProject.tasks.register('generateLockfiles') {
                 rootProject.subprojects.each { subproject ->
                     def gradlew = (OperatingSystem.current().isWindows()) ?
@@ -263,38 +253,6 @@ class FlutterPlugin implements Plugin<Project> {
             }
         }
 
-        if (project.hasProperty("multidex-enabled") &&
-            project.property("multidex-enabled").toBoolean() &&
-            project.android.defaultConfig.minSdkVersion <= 20) {
-            String flutterMultidexKeepfile = Paths.get(flutterRoot.absolutePath, "packages", "flutter_tools",
-                "gradle", "flutter_multidex_keepfile.txt")
-            project.android {
-                defaultConfig {
-                    multiDexEnabled true
-                    manifestPlaceholders = [applicationName: "io.flutter.app.FlutterMultiDexApplication"]
-                }
-                buildTypes {
-                    release {
-                        multiDexKeepFile project.file(flutterMultidexKeepfile)
-                    }
-                }
-            }
-            project.dependencies {
-                implementation "androidx.multidex:multidex:2.0.1"
-            }
-        } else {
-            String baseApplicationName = "android.app.Application"
-            if (project.hasProperty("base-application-name")) {
-                baseApplicationName = project.property("base-application-name")
-            }
-            project.android {
-                defaultConfig {
-                    // Setting to android.app.Application is the same as omitting the attribute.
-                    manifestPlaceholders = [applicationName: baseApplicationName]
-                }
-            }
-        }
-
         if (useLocalEngine()) {
             // This is required to pass the local engine to flutter build aot.
             String engineOutPath = project.property('local-engine-out')
@@ -373,7 +331,7 @@ class FlutterPlugin implements Plugin<Project> {
         getPluginDependencies().each this.&configurePluginDependencies
     }
 
-    /** Adds the plugin project dependency to the app project. */
+    // Adds the plugin project dependency to the app project .
     private void configurePluginProject(String pluginName, String _) {
         Project pluginProject = project.rootProject.findProject(":$pluginName")
         if (pluginProject == null) {
@@ -411,19 +369,22 @@ class FlutterPlugin implements Plugin<Project> {
               "io.flutter:flutter_embedding_$flutterBuildMode:$engineVersion"
             )
         }
-
         // Wait until the Android plugin loaded.
         pluginProject.afterEvaluate {
+<<<<<<< HEAD
             // Checks if there is a mismatch between the plugin compileSdkVersion and the project compileSdkVersion.
             if (pluginProject.android.compileSdkVersion > project.android.compileSdkVersion) {
                 project.logger.quiet("Warning: The plugin ${pluginName} requires Android SDK version ${pluginProject.android.compileSdkVersion.substring(8)}.")
                 project.logger.quiet("For more information about build configuration, see $kWebsiteDeploymentAndroidBuildConfig.")
             }
 
+=======
+>>>>>>> f15c2daff8 (fix: 修复路由手势合并的冲突)
             project.android.buildTypes.all addEmbeddingDependencyToPlugin
         }
     }
 
+<<<<<<< HEAD
     /**
      * Compares semantic versions ignoring labels.
      *
@@ -493,16 +454,21 @@ class FlutterPlugin implements Plugin<Project> {
     /**
      * Returns `true` if the given path contains an `android/build.gradle` file.
      */
+=======
+    // Returns `true` if the given path contains an `android/build.gradle` file.
+    //
+    // TODO(egarciad): Fix https://github.com/flutter/flutter/issues/39657.
+    // Android Studio may create empty android directories due to the logic in <app>/android/settings.gradle,
+    // which imports all plugins regardless of whether they support the android platform.
+>>>>>>> f15c2daff8 (fix: 修复路由手势合并的冲突)
     private Boolean doesSupportAndroidPlatform(String path) {
         File editableAndroidProject = new File(path, 'android' + File.separator + 'build.gradle')
         return editableAndroidProject.exists()
     }
 
-    /**
-     * Add the dependencies on other plugin projects to the plugin project.
-     * A plugin A can depend on plugin B. As a result, this dependency must be surfaced by
-     * making the Gradle plugin project A depend on the Gradle plugin project B.
-     */
+    // Add the dependencies on other plugin projects to the plugin project.
+    // A plugin A can depend on plugin B. As a result, this dependency must be surfaced by
+    // making the Gradle plugin project A depend on the Gradle plugin project B.
     private void configurePluginDependencies(Object dependencyObject) {
         assert dependencyObject.name instanceof String
         Project pluginProject = project.rootProject.findProject(":${dependencyObject.name}")
@@ -545,7 +511,7 @@ class FlutterPlugin implements Plugin<Project> {
         return androidPlugins
     }
 
-    /** Gets the plugins dependencies from `.flutter-plugins-dependencies`. */
+    // Gets the plugins dependencies from `.flutter-plugins-dependencies`.
     private List getPluginDependencies() {
         // Consider a `.flutter-plugins-dependencies` file with the following content:
         // {
@@ -640,7 +606,7 @@ class FlutterPlugin implements Plugin<Project> {
         return false
     }
 
-    /** Whether to build the debug app in "fast-start" mode. */
+    /// Whether to build the debug app in "fast-start" mode.
     private Boolean isFastStart() {
         if (project.hasProperty("fast-start")) {
             return project.property("fast-start").toBoolean()
@@ -654,11 +620,9 @@ class FlutterPlugin implements Plugin<Project> {
         return project.plugins.hasPlugin("com.android.application");
     }
 
-    /**
-     * Returns true if the build mode is supported by the current call to Gradle.
-     * This only relevant when using a local engine. Because the engine
-     * is built for a specific mode, the call to Gradle must match that mode.
-     */
+    // Returns true if the build mode is supported by the current call to Gradle.
+    // This only relevant when using a local engine. Because the engine
+    // is built for a specific mode, the call to Gradle must match that mode.
     private Boolean supportsBuildMode(String flutterBuildMode) {
         if (!useLocalEngine()) {
             return true;
@@ -743,32 +707,30 @@ class FlutterPlugin implements Plugin<Project> {
         return target
     }
 
-    /**
-     * In AGP 4.0, the Android linter task depends on the JAR tasks that generate `libapp.so`.
-     * When building APKs, this causes an issue where building release requires the debug JAR,
-     * but Gradle won't build debug.
-     *
-     * To workaround this issue, only configure the JAR task that is required given the task
-     * from the command line.
-     *
-     * The AGP team said that this issue is fixed in Gradle 7.0, which isn't released at the
-     * time of adding this code. Once released, this can be removed.
-     *
-     * Tested cases:
-     * * `./gradlew assembleRelease`
-     * * `./gradlew app:assembleRelease.`
-     * * `./gradlew assemble{flavorName}Release`
-     * * `./gradlew app:assemble{flavorName}Release`
-     * * `./gradlew assemble.`
-     * * `./gradlew app:assemble.`
-     * * `./gradlew bundle.`
-     * * `./gradlew bundleRelease.`
-     * * `./gradlew app:bundleRelease.`
-     *
-     * Related issues:
-     * https://issuetracker.google.com/issues/158060799
-     * https://issuetracker.google.com/issues/158753935
-     */
+    // In AGP 4.0, the Android linter task depends on the JAR tasks that generate `libapp.so`.
+    // When building APKs, this causes an issue where building release requires the debug JAR,
+    // but Gradle won't build debug.
+    //
+    // To workaround this issue, only configure the JAR task that is required given the task
+    // from the command line.
+    //
+    // The AGP team said that this issue is fixed in Gradle 7.0, which isn't released at the
+    // time of adding this code. Once released, this can be removed.
+    //
+    // Tested cases:
+    // * `./gradlew assembleRelease`
+    // * `./gradlew app:assembleRelease.`
+    // * `./gradlew assemble{flavorName}Release`
+    // * `./gradlew app:assemble{flavorName}Release`
+    // * `./gradlew assemble.`
+    // * `./gradlew app:assemble.`
+    // * `./gradlew bundle.`
+    // * `./gradlew bundleRelease.`
+    // * `./gradlew app:bundleRelease.`
+    //
+    // Related issues:
+    // https://issuetracker.google.com/issues/158060799
+    // https://issuetracker.google.com/issues/158753935
     private boolean shouldConfigureFlutterTask(Task assembleTask) {
         def cliTasksNames = project.gradle.startParameter.taskNames
         if (cliTasksNames.size() != 1 || !cliTasksNames.first().contains("assemble")) {
@@ -1020,7 +982,10 @@ class FlutterPlugin implements Plugin<Project> {
                 }
             }
             configurePlugins()
+<<<<<<< HEAD
             detectLowCompileSdkVersionOrNdkVersion()
+=======
+>>>>>>> f15c2daff8 (fix: 修复路由手势合并的冲突)
             return
         }
         // Flutter host module project (Add-to-app).
@@ -1072,8 +1037,16 @@ class FlutterPlugin implements Plugin<Project> {
             }
         }
         configurePlugins()
+<<<<<<< HEAD
         detectLowCompileSdkVersionOrNdkVersion()
+=======
+>>>>>>> f15c2daff8 (fix: 修复路由手势合并的冲突)
     }
+}
+
+class FlutterExtension {
+    String source
+    String target
 }
 
 abstract class BaseFlutterTask extends DefaultTask {

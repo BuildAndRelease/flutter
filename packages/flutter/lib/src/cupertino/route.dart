@@ -19,11 +19,11 @@ const double _kMinFlingVelocity = 1.0; // Screen widths per second.
 
 // An eyeballed value for the maximum time it takes for a page to animate forward
 // if the user releases a page mid swipe.
-const int _kMaxDroppedSwipePageForwardAnimationTime = 800; // Milliseconds.
+const int _kMaxDroppedSwipePageForwardAnimationTime = 250; // Milliseconds.
 
 // The maximum time for a page to get reset to it's original position if the
 // user releases a page mid swipe.
-const int _kMaxPageBackAnimationTime = 300; // Milliseconds.
+const int _kMaxPageBackAnimationTime = 250; // Milliseconds.
 
 /// Barrier color used for a barrier visible during transitions for Cupertino
 /// page routes.
@@ -748,7 +748,7 @@ class _CupertinoBackGestureController<T> {
     //
     // This curve has been determined through rigorously eyeballing native iOS
     // animations.
-    const Curve animationCurve = Curves.fastLinearToSlowEaseIn;
+    const Curve animationCurve = Curves.easeOut;
     final bool animateForward;
 
     // If the user releases the page before mid screen with sufficient velocity,
@@ -779,8 +779,6 @@ class _CupertinoBackGestureController<T> {
         final int droppedPageBackAnimationTime = lerpDouble(0, _kMaxDroppedSwipePageForwardAnimationTime, controller.value)!.floor();
         controller.animateBack(0.0, duration: Duration(milliseconds: droppedPageBackAnimationTime), curve: animationCurve);
       }
-      navigator.didStopUserGesture();
-      return;
     }
 
     if (controller.isAnimating) {
