@@ -23,7 +23,6 @@ import org.gradle.api.tasks.bundling.Jar
 import org.gradle.internal.os.OperatingSystem
 import org.gradle.util.VersionNumber
 
-<<<<<<< HEAD
 /** For apps only. Provides the flutter extension used in app/build.gradle. */
 class FlutterExtension {
     /** Sets the compileSdkVersion used by default in Flutter app projects. */
@@ -51,8 +50,7 @@ class FlutterExtension {
     String target
 }
 
-=======
->>>>>>> f15c2daff8 (fix: 修复路由手势合并的冲突)
+
 buildscript {
     repositories {
         google()
@@ -371,20 +369,16 @@ class FlutterPlugin implements Plugin<Project> {
         }
         // Wait until the Android plugin loaded.
         pluginProject.afterEvaluate {
-<<<<<<< HEAD
+
             // Checks if there is a mismatch between the plugin compileSdkVersion and the project compileSdkVersion.
             if (pluginProject.android.compileSdkVersion > project.android.compileSdkVersion) {
                 project.logger.quiet("Warning: The plugin ${pluginName} requires Android SDK version ${pluginProject.android.compileSdkVersion.substring(8)}.")
                 project.logger.quiet("For more information about build configuration, see $kWebsiteDeploymentAndroidBuildConfig.")
             }
 
-=======
->>>>>>> f15c2daff8 (fix: 修复路由手势合并的冲突)
             project.android.buildTypes.all addEmbeddingDependencyToPlugin
         }
     }
-
-<<<<<<< HEAD
     /**
      * Compares semantic versions ignoring labels.
      *
@@ -454,13 +448,6 @@ class FlutterPlugin implements Plugin<Project> {
     /**
      * Returns `true` if the given path contains an `android/build.gradle` file.
      */
-=======
-    // Returns `true` if the given path contains an `android/build.gradle` file.
-    //
-    // TODO(egarciad): Fix https://github.com/flutter/flutter/issues/39657.
-    // Android Studio may create empty android directories due to the logic in <app>/android/settings.gradle,
-    // which imports all plugins regardless of whether they support the android platform.
->>>>>>> f15c2daff8 (fix: 修复路由手势合并的冲突)
     private Boolean doesSupportAndroidPlatform(String path) {
         File editableAndroidProject = new File(path, 'android' + File.separator + 'build.gradle')
         return editableAndroidProject.exists()
@@ -982,10 +969,7 @@ class FlutterPlugin implements Plugin<Project> {
                 }
             }
             configurePlugins()
-<<<<<<< HEAD
             detectLowCompileSdkVersionOrNdkVersion()
-=======
->>>>>>> f15c2daff8 (fix: 修复路由手势合并的冲突)
             return
         }
         // Flutter host module project (Add-to-app).
@@ -1037,10 +1021,7 @@ class FlutterPlugin implements Plugin<Project> {
             }
         }
         configurePlugins()
-<<<<<<< HEAD
         detectLowCompileSdkVersionOrNdkVersion()
-=======
->>>>>>> f15c2daff8 (fix: 修复路由手势合并的冲突)
     }
 }
 
