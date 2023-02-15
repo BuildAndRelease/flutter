@@ -1025,11 +1025,6 @@ class FlutterPlugin implements Plugin<Project> {
     }
 }
 
-class FlutterExtension {
-    String source
-    String target
-}
-
 abstract class BaseFlutterTask extends DefaultTask {
     @Internal
     File flutterRoot
