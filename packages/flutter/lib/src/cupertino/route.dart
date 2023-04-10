@@ -785,8 +785,6 @@ class _CupertinoBackGestureController<T> {
         final int droppedPageBackAnimationTime = lerpDouble(0, _kMaxDroppedSwipePageForwardAnimationTime, controller.value)!.floor();
         controller.animateBack(0.0, duration: Duration(milliseconds: droppedPageBackAnimationTime), curve: animationCurve);
       }
-      navigator.didStopUserGesture();
-      return;
     }
 
     if (controller.isAnimating) {
