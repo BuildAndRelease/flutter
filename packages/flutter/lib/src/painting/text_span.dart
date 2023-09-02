@@ -277,7 +277,7 @@ class TextSpan extends InlineSpan implements HitTestTarget, MouseTrackerAnnotati
     }
     if (text != null) {
       try {
-        final t = text!.replaceAll('️⃣', '');
+        final t = text!.replaceAll('️⃣', '\u200b\u200b');
         builder.addText(t);
       } on ArgumentError catch (exception, stack) {
         FlutterError.reportError(FlutterErrorDetails(
