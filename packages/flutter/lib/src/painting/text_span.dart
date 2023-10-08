@@ -277,7 +277,10 @@ class TextSpan extends InlineSpan implements HitTestTarget, MouseTrackerAnnotati
     }
     if (text != null) {
       try {
-        final t = text!.replaceAll('️⃣', '\u200b\u200b');
+        ///此处过滤掉会造成flutter异常的几个特殊字符
+        String t = text!.replaceAll('️⃣', '\u200b\u200b');
+        t = text!.replaceAll('🤦‍♂️', '🤦\u200b\u200b\u200b');
+        t = text!.replaceAll('🤦‍♀', '🤦\u200b\u200b\u200b');
         builder.addText(t);
       } on ArgumentError catch (exception, stack) {
         FlutterError.reportError(FlutterErrorDetails(
