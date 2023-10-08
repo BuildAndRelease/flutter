@@ -279,8 +279,23 @@ class TextSpan extends InlineSpan implements HitTestTarget, MouseTrackerAnnotati
       try {
         ///此处过滤掉会造成flutter异常的几个特殊字符
         String t = text!.replaceAll('️⃣', '\u200b\u200b');
-        t = text!.replaceAll('🤦‍♂️', '🤦\u200b\u200b\u200b');
-        t = text!.replaceAll('🤦‍♀', '🤦\u200b\u200b\u200b');
+        if (t.contains('\u200d\u2764\ufe0f\u200d')) {
+          RegExp pattern = RegExp(r'(.{2})\u200d\u2764\ufe0f\u200d(.{2})');
+          t = t.replaceAll(pattern, '\u200b\u200b\u200b💏\u200b\u200b\u200b');
+        }
+        t = t.replaceAll('‍♂️', '\u200b\u200b\u200b');
+        t = t.replaceAll('‍♀', '\u200b\u200b');
+        t = t.replaceAll('👩🏿‍🦯', '🦯\u200b\u200b\u200b\u200b\u200b');
+        t = t.replaceAll('🧑‍🦯', '🦯\u200b\u200b\u200b');
+        t = t.replaceAll('👨‍🦯', '🦯\u200b\u200b\u200b');
+        t = t.replaceAll('👩🏽‍', '\u200b\u200b\u200b\u200b\u200b');
+        t = t.replaceAll('👨🏼‍', '\u200b\u200b\u200b\u200b\u200b');
+        t = t.replaceAll('🧑🏼‍', '\u200b\u200b\u200b\u200b\u200b');
+        t = t.replaceAll('👩🏿‍', '\u200b\u200b\u200b\u200b\u200b');
+        t = t.replaceAll('👨🏻‍', '\u200b\u200b\u200b\u200b\u200b');
+        t = t.replaceAll('🧑🏽‍', '\u200b\u200b\u200b\u200b\u200b');
+        t = t.replaceAll('🕴️', '🧍\u200b');
+        
         builder.addText(t);
       } on ArgumentError catch (exception, stack) {
         FlutterError.reportError(FlutterErrorDetails(
