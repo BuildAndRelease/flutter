@@ -295,7 +295,13 @@ class TextSpan extends InlineSpan implements HitTestTarget, MouseTrackerAnnotati
         t = t.replaceAll('👨🏻‍', '\u200b\u200b\u200b\u200b\u200b');
         t = t.replaceAll('🧑🏽‍', '\u200b\u200b\u200b\u200b\u200b');
         t = t.replaceAll('🕴️', '🧍\u200b');
-        
+        if (t.contains('\ud83c') && t.contains('\ufe0f')) {
+          RegExp regex = RegExp(r'(\ud83c[\uDC00-\uDFFF]\ufe0f)');
+          t = t.replaceAllMapped(regex, (match) {
+            String emoji = match.group(0) ?? '';
+            return emoji.replaceFirst('\ufe0f', '\u200b');
+          });
+        }
         builder.addText(t);
       } on ArgumentError catch (exception, stack) {
         FlutterError.reportError(FlutterErrorDetails(
