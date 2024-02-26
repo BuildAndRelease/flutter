@@ -309,7 +309,7 @@ class TextField extends StatefulWidget {
     this.contextMenuBuilder = _defaultContextMenuBuilder,
     this.canRequestFocus = true,
     this.spellCheckConfiguration,
-    this.magnifierConfiguration,
+    this.magnifierConfiguration = TextMagnifierConfiguration.disabled,
   }) : assert(obscuringCharacter.length == 1),
        smartDashesType = smartDashesType ?? (obscureText ? SmartDashesType.disabled : SmartDashesType.enabled),
        smartQuotesType = smartQuotesType ?? (obscureText ? SmartQuotesType.disabled : SmartQuotesType.enabled),
